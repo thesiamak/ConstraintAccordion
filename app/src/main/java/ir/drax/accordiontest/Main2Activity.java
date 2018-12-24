@@ -9,6 +9,8 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import ir.drax.accordiontest.accordionList.AccordionItem;
+import ir.drax.accordiontest.accordionList.AccordionList;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;

@@ -1,12 +1,16 @@
-package ir.drax.accordiontest;
+package ir.drax.accordiontest.accordionList;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.CardView;
+import android.text.method.ScrollingMovementMethod;
+import android.text.util.Linkify;
 import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -14,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import ir.drax.accordiontest.R;
 
 import java.util.ArrayList;
 
@@ -25,11 +30,13 @@ public class AccordionList extends ConstraintLayout {
     private int count,selected = 0;
     //private ArrayList<View> titleViewList = new ArrayList<View>();
     private CardView contentView;
-    private ArrayList<AccordionItem> accordionItems;
+    private ArrayList<AccordionItem> accordionItems = new ArrayList<>();
     private int CONTENT_VIEW_ID = 951753;
     private int CONTENT_ARROW_ID = 952753;
     private int ARROW_ICON = android.R.drawable.ic_media_play;
     private int density ;
+    private Typeface face;
+
 
     public AccordionList(Context context) {
         super(context);
@@ -44,7 +51,17 @@ public class AccordionList extends ConstraintLayout {
     }
 
     public AccordionList push(ArrayList<AccordionItem> accordionItems){
-        this.accordionItems = accordionItems;
+        this.accordionItems.addAll(accordionItems);
+        return this;
+    }
+
+    public AccordionList push(AccordionItem accordionItem){
+        this.accordionItems.add( accordionItem);
+        return this;
+    }
+
+    public AccordionList clear(){
+        this.accordionItems.clear();
         return this;
     }
 
@@ -80,7 +97,7 @@ public class AccordionList extends ConstraintLayout {
         for (int i = 0; i < count; i++) {
             View view = accordionItems.get(i).getView();
             final int finalI = i;
-            view.setOnClickListener(new View.OnClickListener() {
+            view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     itemClicked((RelativeLayout) view, finalI);
@@ -112,23 +129,32 @@ public class AccordionList extends ConstraintLayout {
 
     private CardView getContentView() {
         CardView cardView = new CardView(getContext());
-        cardView.setId(CONTENT_VIEW_ID-1);
+        cardView.setId(CONTENT_VIEW_ID - 1);
         cardView.setCardElevation(7.0f);
         //cardView.setcard
 
         cardView.setUseCompatPadding(true);
-        cardView.setContentPadding(12,12,12,12);
-        LayoutParams layout_764 = new LayoutParams(0,0);
+
+        cardView.setContentPadding(12, 12, 12, 12);
+        //cardView.scrolla
+        LayoutParams layout_764 = new LayoutParams(0, 0);
         cardView.setLayoutParams(layout_764);
 
 
         TextView content = new TextView(getContext());
         content.setId(CONTENT_VIEW_ID);
-        content.setGravity(Gravity.START);
+        content.setGravity(Gravity.END);
+        content.setLinksClickable(true);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             content.setTextDirection(View.LAYOUT_DIRECTION_LOCALE);
             content.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
         }
+
+        content.setVerticalScrollBarEnabled(true);
+        content.setMovementMethod(new ScrollingMovementMethod());
+        content.setTypeface(face);
+
         LayoutParams layout_36 = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         content.setLayoutParams(layout_36);
 
@@ -170,6 +196,8 @@ public class AccordionList extends ConstraintLayout {
 
         ((TextView)contentView.findViewById(CONTENT_VIEW_ID))
                 .setText(accordionItems.get(index).getText());
+
+        Linkify.addLinks((TextView)contentView.findViewById(CONTENT_VIEW_ID), Linkify.ALL);
         clickedView
                 .findViewById(CONTENT_ARROW_ID)
                 .animate()
@@ -188,6 +216,9 @@ public class AccordionList extends ConstraintLayout {
             TransitionManager.beginDelayedTransition(this);
         }
         set.applyTo(this);
+        contentView.findViewById(CONTENT_VIEW_ID)
+                .scrollTo(0,0);
+
         selected = index;
     }
 
@@ -204,19 +235,20 @@ public class AccordionList extends ConstraintLayout {
 
 
         TextView tv = new TextView(getContext());
+        tv.setMaxLines(1);
         tv.setBackgroundResource(backgroundResource);
         tv.setTextColor(Color.parseColor(HEADER_TITLE_COLOR));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             tv.setPaddingRelative(density * 12
+                    ,density * 2
                     ,density * 12
-                    ,density * 12
-                    ,density * 12);
+                    ,density * 2);
         }else
             tv.setPadding(density * 12
+                    ,density * 2
                     ,density * 12
-                    ,density * 12
-                    ,density * 12);
-
+                    ,density * 2);
+        tv.setTypeface(face);
         tv.setGravity(Gravity.START);
         RelativeLayout.LayoutParams layout_765 = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         layout_765.bottomMargin = (int) (density * 2);
@@ -234,15 +266,14 @@ public class AccordionList extends ConstraintLayout {
         layout.addView(tv);
 
         ImageView arrow = new ImageView(getContext());
-        RelativeLayout.LayoutParams layout_766 = new RelativeLayout.LayoutParams(density * 55
-                , density * 55);
+        RelativeLayout.LayoutParams layout_766 = new RelativeLayout.LayoutParams(density * 10
+                , density * 10);
         layout_766.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
         layout_766.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
         layout_766.setMargins(density * 8 , 0 , density * 8 , 0);
         arrow.setLayoutParams(layout_766);
         arrow.setId(CONTENT_ARROW_ID);
         arrow.setRotation(0);
-
         arrow.setImageResource(ARROW_ICON);
 
         layout.addView(arrow);
@@ -253,9 +284,18 @@ public class AccordionList extends ConstraintLayout {
         this.HEADER_TITLE_COLOR = HEADER_TITLE_COLOR;
         return this;
     }
+    public AccordionList setHEADER_TITLE_COLOR(int HEADER_TITLE_COLOR) {
+        this.HEADER_TITLE_COLOR = String.format("#%06X", 0xFFFFFF & getResources().getColor(HEADER_TITLE_COLOR));
+        return this;
+    }
 
     public AccordionList setHEADER_BG_COLOR(String HEADER_BG_COLOR) {
         this.HEADER_BG_COLOR = HEADER_BG_COLOR;
+        return this;
+    }
+
+    public AccordionList setHEADER_BG_COLOR(int HEADER_BG_COLOR) {
+        this.HEADER_BG_COLOR = String.format("#%06X", 0xFFFFFF & getResources().getColor(HEADER_BG_COLOR));
         return this;
     }
 
@@ -263,39 +303,9 @@ public class AccordionList extends ConstraintLayout {
         this.ARROW_ICON = ARROW_ICON;
         return this;
     }
-}
 
-class AccordionItem{
-    private String title;
-    private String text;
-    private RelativeLayout view;
-
-    public AccordionItem(String title, String text) {
-        this.title = title;
-        this.text = text;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public RelativeLayout getView() {
-        return view;
-    }
-
-    void setView(RelativeLayout view) {
-        this.view = view;
+    public void setFace(int face) {
+        this.face = ResourcesCompat.getFont(getContext(),face);
     }
 }
+
