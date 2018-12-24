@@ -1,19 +1,10 @@
 package ir.drax.accordiontest;
 
-import android.os.Build;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.TransitionManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
-import ir.drax.accordiontest.accordionList.AccordionItem;
-import ir.drax.accordiontest.accordionList.AccordionList;
-import org.w3c.dom.Text;
-
+import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
+import ir.drax.constraintaccordion.AccordionItem;
+import ir.drax.constraintaccordion.AccordionList;
 
 public class Main2Activity extends AppCompatActivity {
 
@@ -48,7 +39,7 @@ public class Main2Activity extends AppCompatActivity {
         accordionItems.add(new AccordionItem("title 6" , "sda;lakdas;lTexxxxx"));
         accordionItems.add(new AccordionItem("title 7" , "das;lkd;la;lask;dl,amsdl;as;ldkmas;lkdjasdkasmdsam;lkmdalskmdklas d"));
 
-        AccordionList accordionList = findViewById(R.id.accordion);
+        AccordionList accordionList = (AccordionList) findViewById(R.id.accordion);
         accordionList
                 .setARROW_ICON(R.mipmap.left_arrow_icon)
                 .push(accordionItems)

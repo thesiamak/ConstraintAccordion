@@ -7,11 +7,11 @@
         android:layout_height="match_parent"
         tools:context=".Main2Activity">
 
-    <ScrollView android:layout_width="match_parent"
+    <!--<ScrollView android:layout_width="match_parent"
                 android:layout_height="match_parent">
-        <ir.drax.accordiontest.AccordionList
+    -->    <ir.drax.constraintaccordion.AccordionList
                 android:id="@+id/accordion"
                 android:layout_width="match_parent"
-                android:layout_height="1500dp"/>
-    </ScrollView>
+                android:layout_height="match_parent"/>
+    <!--</ScrollView>-->
 </android.support.constraint.ConstraintLayout>
