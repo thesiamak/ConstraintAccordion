@@ -23,9 +23,9 @@ public class AccordionList extends ConstraintLayout {
 
     private String HEADER_TITLE_COLOR = "#ffffffff";
     private String HEADER_BG_COLOR = "#FF827717";
-    //private ConstraintLayout constraintLayout;
+
     private int count,selected = 0;
-    //private ArrayList<View> titleViewList = new ArrayList<View>();
+
     private CardView contentView;
     private ArrayList<AccordionItem> accordionItems = new ArrayList<>();
     private int CONTENT_VIEW_ID = 951753;
@@ -77,17 +77,6 @@ public class AccordionList extends ConstraintLayout {
 
             accordionItems.get(i).setView(titleView);
         }
-
-
-        //contentView = contentViewC.findViewById(CONTENT_VIEW_ID);
-
-
-/*
-        for (int i = 0; i < titleViewList.size(); i++) {
-            View view = titleViewList.get(i);
-            constraintLayout.addView(view);
-        }
-*/
 
         ConstraintSet set = new ConstraintSet();
 

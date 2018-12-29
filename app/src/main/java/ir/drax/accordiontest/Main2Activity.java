@@ -39,7 +39,7 @@ public class Main2Activity extends AppCompatActivity {
         accordionItems.add(new AccordionItem("title 6" , "sda;lakdas;lTexxxxx"));
         accordionItems.add(new AccordionItem("title 7" , "das;lkd;la;lask;dl,amsdl;as;ldkmas;lkdjasdkasmdsam;lkmdalskmdklas d"));
 
-        AccordionList accordionList = (AccordionList) findViewById(R.id.accordion);
+        AccordionList accordionList = findViewById(R.id.accordion);
         accordionList
                 .setARROW_ICON(R.mipmap.left_arrow_icon)
                 .push(accordionItems)
