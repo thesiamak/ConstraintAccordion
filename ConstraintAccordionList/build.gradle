@@ -1,0 +1,64 @@
+buildscript {
+
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'ConstraintAccordionList'
+
+    publishedGroupId = 'ir.drax'
+    libraryName = 'ConstraintAccordionList'
+    artifact = 'ConstraintAccordionList'
+
+    libraryDescription = ' A Simple Accordion list using ConstraintLayout and ConstraintSet.'
+
+    siteUrl = 'https://github.com/draxdave/ConstraintAccordion'
+    gitUrl = 'https://github.com/draxdave/ConstraintAccordion'
+
+    libraryVersion = '0.0.1'
+
+    developerId = 'draxdave'
+    developerName = 'Siamak mahmoudi'
+    developerEmail = 'ssiasoft@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+
+
+dependencies {
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    api 'com.android.support.constraint:constraint-layout:1.1.3'
+    //api 'com.android.support:cardview-v7:28.0.0'
+}
+
+
+apply from: 'script.gradle'

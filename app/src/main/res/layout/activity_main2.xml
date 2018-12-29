@@ -9,7 +9,7 @@
 
     <!--<ScrollView android:layout_width="match_parent"
                 android:layout_height="match_parent">
-    -->    <ir.drax.constraintaccordion.AccordionList
+    -->    <ir.drax.constraintaccordionlist.AccordionList
                 android:id="@+id/accordion"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

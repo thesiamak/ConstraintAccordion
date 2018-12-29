@@ -1,1 +1,1 @@
-include ':app', ':constraintaccordion'
+include ':app', ':ConstraintAccordionList'

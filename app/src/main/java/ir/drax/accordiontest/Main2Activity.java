@@ -3,8 +3,8 @@ package ir.drax.accordiontest;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
-import ir.drax.constraintaccordion.AccordionItem;
-import ir.drax.constraintaccordion.AccordionList;
+import ir.drax.constraintaccordionlist.AccordionItem;
+import ir.drax.constraintaccordionlist.AccordionList;
 
 public class Main2Activity extends AppCompatActivity {
 
