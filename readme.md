@@ -88,7 +88,7 @@ _That's it!_
 
 
 ### To-do:
-* [ ] Clear from Card-View
+* [x] Clear from Card-View
 * [x] Handle indefinite list items
 * [ ] Redesign UI
 * [ ] Make styles public
