@@ -1,6 +1,7 @@
 package ir.drax.constraintaccordionlist;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -12,17 +13,23 @@ import android.text.util.Linkify;
 import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class AccordionList extends ConstraintLayout {
+public class AccordionList extends ScrollView {
 
     private String HEADER_TITLE_COLOR = "#ffffffff";
     private String HEADER_BG_COLOR = "#FF827717";
+    private int CONTENT_PADDING_TOP = 12;
+    private int CONTENT_PADDING_BOTTOM = 12;
 
     private int count,selected = 0;
 
@@ -33,18 +40,29 @@ public class AccordionList extends ConstraintLayout {
     private int ARROW_ICON = android.R.drawable.ic_media_play;
     private int density ;
     private Typeface face;
+    private String TAG = getClass().getSimpleName();
+    private ConstraintLayout root;
+    private int CONTENT_MIN_HEIGHT = 500;
 
+    private void preConfig(){
+        setFillViewport(true);
+        density = (int) (4/getContext().getResources().getDisplayMetrics().density) ;
+        contentView = getContentView();
+    }
 
     public AccordionList(Context context) {
         super(context);
+        preConfig();
     }
 
     public AccordionList(Context context, AttributeSet attrs) {
         super(context, attrs);
+        preConfig();
     }
 
     public AccordionList(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        preConfig();
     }
 
     public AccordionList push(ArrayList<AccordionItem> accordionItems){
@@ -63,9 +81,11 @@ public class AccordionList extends ConstraintLayout {
     }
 
     public void build(){
-        density = (int) (4/getContext().getResources().getDisplayMetrics().density) ;
-        contentView= getContentView();
-        addView(contentView);
+        root = getConstraintLayout();
+
+        //if (contentView.getParent() == null)
+            root.addView(contentView);
+
         count = accordionItems.size();
         for (int i = 0; i < count; i++) {
 
@@ -89,45 +109,72 @@ public class AccordionList extends ConstraintLayout {
                     itemClicked((RelativeLayout) view, finalI);
                 }
             });
-            addView(view);
 
-            set.clone(this);
+            root.addView(view);
+
+            set.clone(root);
 
             set.connect(view.getId(), ConstraintSet.TOP, i == 0 ? ConstraintSet.PARENT_ID : accordionItems.get(i-1).getView().getId(), i == 0 ? ConstraintSet.TOP : ConstraintSet.BOTTOM);
             set.connect(view.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
             set.connect(view.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
 
-            set.applyTo(this);
-
+            set.applyTo(root);
         }
 
-
-
-        set.clone(this);
+        set.clone(root);
         set.connect(contentView.getId(), ConstraintSet.TOP, accordionItems.get(count-1).getView().getId(), ConstraintSet.BOTTOM);
         set.connect(contentView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
         set.connect(contentView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
 
-        set.applyTo(this);
+        set.applyTo(root);
 
-        itemClicked((RelativeLayout) accordionItems.get(selected).getView(),selected);
+        itemClicked(accordionItems.get(selected).getView(),selected);//select first item as default
+
+        removeAllViews();
+
+        //if (getChildCount()==0){
+            /*Toast.makeText(getContext(), "ok", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "lll", Toast.LENGTH_SHORT).show();*/
+        addView(root);
+        //}
+
+    }
+
+    private ConstraintLayout getConstraintLayout() {
+        ConstraintLayout layout = new ConstraintLayout(getContext());
+        layout.setLayoutParams(new ScrollView.LayoutParams(
+                ScrollView.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
+        ));
+        return layout;
     }
 
     private CardView getContentView() {
-        CardView cardView = new CardView(getContext());
+        CardView cardView = new CardView(getContext()){
+            @Override
+            protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                super.onLayout(changed, left, top, right, bottom);
+                Toast.makeText(getContext(), changed+"|"+contentView.getHeight(), Toast.LENGTH_SHORT).show();
+
+                if (changed)
+                    if (contentView.getHeight() < CONTENT_MIN_HEIGHT){
+                        configParentsToHandleContentHeight();
+                        //build();
+
+
+                    }
+            }
+        };
         cardView.setId(CONTENT_VIEW_ID - 1);
         cardView.setCardElevation(7.0f);
-        //cardView.setcard
 
-        cardView.setUseCompatPadding(true);
+        //cardView.setUseCompatPadding(true);
 
-        cardView.setContentPadding(12, 12, 12, 12);
-        //cardView.scrolla
+        cardView.setContentPadding(12, CONTENT_PADDING_TOP, 12, CONTENT_PADDING_BOTTOM);
         LayoutParams layout_764 = new LayoutParams(0, 0);
         cardView.setLayoutParams(layout_764);
 
 
-        TextView content = new TextView(getContext());
+        final TextView content = new TextView(getContext());
         content.setId(CONTENT_VIEW_ID);
         content.setGravity(Gravity.END);
         content.setLinksClickable(true);
@@ -138,11 +185,46 @@ public class AccordionList extends ConstraintLayout {
         }
 
         content.setVerticalScrollBarEnabled(true);
+        content.setOverScrollMode(OVER_SCROLL_ALWAYS);
+        content.setScrollBarStyle(SCROLLBARS_INSIDE_INSET);
         content.setMovementMethod(new ScrollingMovementMethod());
         content.setTypeface(face);
 
+
+        content.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (v.getId() == CONTENT_VIEW_ID) {
+                    if ((v.getHeight() + (CONTENT_PADDING_BOTTOM+CONTENT_PADDING_TOP)) <contentView.getHeight()) return false;//if no need to scroll
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                        case MotionEvent.ACTION_UP:
+                            v.getParent().requestDisallowInterceptTouchEvent(false);
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+
+        content.getViewTreeObserver()
+                .addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                    @Override
+                    public void onScrollChanged() {
+                        if (!content.canScrollVertically(1)) {//to continue scrolling the list if content scrolling ended from bottom
+                            // bottom of scroll view
+                            content.getParent().requestDisallowInterceptTouchEvent(false);
+                        }
+                        if (!content.canScrollVertically(-1)) {//to continue scrolling the list if content scrolling ended from top
+                            // top of scroll view
+                            content.getParent().requestDisallowInterceptTouchEvent(false);
+                        }
+                    }
+                });
+
         LayoutParams layout_36 = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         content.setLayoutParams(layout_36);
+
 
         cardView.addView(content);
 
@@ -152,7 +234,7 @@ public class AccordionList extends ConstraintLayout {
 
     private void itemClicked(RelativeLayout  clickedView, int index) {
         ConstraintSet set = new ConstraintSet();
-        set.clone(this);
+        set.clone(root);
 
         for (int i = 0; i < count; i++) {
 
@@ -201,7 +283,7 @@ public class AccordionList extends ConstraintLayout {
 
             TransitionManager.beginDelayedTransition(this);
         }
-        set.applyTo(this);
+        set.applyTo(root);
         contentView.findViewById(CONTENT_VIEW_ID)
                 .scrollTo(0,0);
 
@@ -213,12 +295,12 @@ public class AccordionList extends ConstraintLayout {
         LayoutParams layout_763 = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(layout_763);
         layout.setBackgroundColor(Color.parseColor(HEADER_BG_COLOR));
-        /*int[] attrs = new int[]{R.attr.selectableItemBackground};
+
+        int[] attrs = new int[]{R.attr.selectableItemBackground};
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs);
         int backgroundResource = typedArray.getResourceId(0, 0);
 
         typedArray.recycle();
-*/
 
         TextView tv = new TextView(getContext());
         tv.setMaxLines(1);
@@ -299,6 +381,17 @@ public class AccordionList extends ConstraintLayout {
         //this.face = ResourcesCompat.getFont(getContext(),face);
         this.face = Typeface.createFromAsset(getResources().getAssets(),face);
 
+    }
+
+    private void configParentsToHandleContentHeight(){
+        ConstraintLayout.LayoutParams layout_765 = (ConstraintLayout.LayoutParams) contentView.getLayoutParams();
+        layout_765.height = CONTENT_MIN_HEIGHT;
+
+        contentView.setLayoutParams(layout_765);
+
+        ScrollView.LayoutParams layout_769 = (ScrollView.LayoutParams) root.getLayoutParams();
+        layout_769.height = LayoutParams.WRAP_CONTENT;
+        root.setLayoutParams(layout_769);
     }
 }
 
