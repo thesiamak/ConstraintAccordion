@@ -1,13 +1,11 @@
 package ir.drax.constraintaccordionlist;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
-import android.support.v7.widget.CardView;
 import android.text.method.ScrollingMovementMethod;
 import android.text.util.Linkify;
 import android.transition.TransitionManager;
@@ -17,10 +15,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -33,7 +31,7 @@ public class AccordionList extends ScrollView {
 
     private int count,selected = 0;
 
-    private CardView contentView;
+    private LinearLayout contentView;
     private ArrayList<AccordionItem> accordionItems = new ArrayList<>();
     private int CONTENT_VIEW_ID = 951753;
     private int CONTENT_ARROW_ID = 952753;
@@ -148,30 +146,22 @@ public class AccordionList extends ScrollView {
         return layout;
     }
 
-    private CardView getContentView() {
-        CardView cardView = new CardView(getContext()){
+    private LinearLayout getContentView() {
+        LinearLayout contentLayout = new LinearLayout(getContext()){
             @Override
             protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
                 super.onLayout(changed, left, top, right, bottom);
-                Toast.makeText(getContext(), changed+"|"+contentView.getHeight(), Toast.LENGTH_SHORT).show();
-
                 if (changed)
                     if (contentView.getHeight() < CONTENT_MIN_HEIGHT){
-                        configParentsToHandleContentHeight();
-                        //build();
-
-
+                        configParentsToHandleContentNewHeight();
                     }
             }
         };
-        cardView.setId(CONTENT_VIEW_ID - 1);
-        cardView.setCardElevation(7.0f);
+        contentLayout.setId(CONTENT_VIEW_ID - 1);
 
-        //cardView.setUseCompatPadding(true);
-
-        cardView.setContentPadding(12, CONTENT_PADDING_TOP, 12, CONTENT_PADDING_BOTTOM);
+        contentLayout.setPadding(12, CONTENT_PADDING_TOP, 12, CONTENT_PADDING_BOTTOM);
         LayoutParams layout_764 = new LayoutParams(0, 0);
-        cardView.setLayoutParams(layout_764);
+        contentLayout.setLayoutParams(layout_764);
 
 
         final TextView content = new TextView(getContext());
@@ -226,9 +216,9 @@ public class AccordionList extends ScrollView {
         content.setLayoutParams(layout_36);
 
 
-        cardView.addView(content);
+        contentLayout.addView(content);
 
-        return cardView;
+        return contentLayout;
     }
 
 
@@ -295,12 +285,12 @@ public class AccordionList extends ScrollView {
         LayoutParams layout_763 = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(layout_763);
         layout.setBackgroundColor(Color.parseColor(HEADER_BG_COLOR));
-
+/*
         int[] attrs = new int[]{R.attr.selectableItemBackground};
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs);
         int backgroundResource = typedArray.getResourceId(0, 0);
 
-        typedArray.recycle();
+        typedArray.recycle();*/
 
         TextView tv = new TextView(getContext());
         tv.setMaxLines(1);
@@ -372,6 +362,11 @@ public class AccordionList extends ScrollView {
         return this;
     }
 
+    public AccordionList setCONTENT_MIN_HEIGHT(int min_height) {
+        this.CONTENT_MIN_HEIGHT= min_height;
+        return this;
+    }
+
     public void setFace(int face) {
         //this.face = ResourcesCompat.getFont(getContext(),face);
 
@@ -383,7 +378,7 @@ public class AccordionList extends ScrollView {
 
     }
 
-    private void configParentsToHandleContentHeight(){
+    private void configParentsToHandleContentNewHeight(){
         ConstraintLayout.LayoutParams layout_765 = (ConstraintLayout.LayoutParams) contentView.getLayoutParams();
         layout_765.height = CONTENT_MIN_HEIGHT;
 
