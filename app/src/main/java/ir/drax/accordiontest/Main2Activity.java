@@ -37,14 +37,17 @@ public class Main2Activity extends AppCompatActivity {
         accordionItems.add(new AccordionItem("title 4" , "Texxxxdasdsax"));
         accordionItems.add(new AccordionItem("title 4" , "Texxxxdasdsax"));
         accordionItems.add(new AccordionItem("title 4" , "Texxxxdasdsax"));
-        */accordionItems.add(new AccordionItem("title 4" , "Texxxxdasdsax"));
+        */
+        AccordionList accordionList = findViewById(R.id.accordion);
+        accordionList.push(accordionItems)
+        .build();
+
+        accordionItems.add(new AccordionItem("title 4" , "Texxxxdasdsax"));
         accordionItems.add(new AccordionItem("title 5" , "Texxxxxadsadsdsaa "));
         accordionItems.add(new AccordionItem("title 5" , "Texxxxxadsadsdsaa "));
         accordionItems.add(new AccordionItem("title 6" , "sda;lakdas;lTexxxxx"));
 
-        AccordionList accordionList = findViewById(R.id.accordion);
-        accordionList.push(accordionItems)
-        .build();
+        accordionList.push(accordionItems).build();
         //setContentView(constraintLayout);
 
         //buildConstraintLayout();

@@ -1,15 +1,21 @@
 package ir.drax.constraintaccordionlist;
 
-import android.widget.RelativeLayout;
+import android.view.ViewGroup;
 
 public class AccordionItem{
     private String title;
     private String text;
-    private RelativeLayout view;
+    private ViewGroup view;
 
     public AccordionItem(String title, String text) {
         this.title = title;
         this.text = text;
+    }
+
+    public AccordionItem(String title, String text, ViewGroup view) {
+        this.title = title;
+        this.text = text;
+        this.view = view;
     }
 
     public String getTitle() {
@@ -28,11 +34,11 @@ public class AccordionItem{
         this.text = text;
     }
 
-    public RelativeLayout getView() {
+    public ViewGroup getView() {
         return view;
     }
 
-    void setView(RelativeLayout view) {
+    void setView(ViewGroup view) {
         this.view = view;
     }
 }
