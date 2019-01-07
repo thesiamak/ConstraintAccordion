@@ -93,6 +93,7 @@ _That's it!_
 * [ ] Redesign UI
 * [ ] Make styles public
 * [ ] Display multiple content types
+* [ ] Test on old sdk versions
 
 
 
