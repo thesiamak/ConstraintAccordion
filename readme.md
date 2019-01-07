@@ -92,6 +92,7 @@ _That's it!_
 * [x] Handle indefinite list items
 * [ ] Redesign UI
 * [ ] Make styles public
+* [ ] Display multiple content types
 
 
 
