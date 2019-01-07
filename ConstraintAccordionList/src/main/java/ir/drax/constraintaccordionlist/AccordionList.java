@@ -1,8 +1,11 @@
 package ir.drax.constraintaccordionlist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 
 public class AccordionList extends ScrollView {
 
+    private String TITLE_LAYOUT_NAME = "constraint_accordion_title";
     private String HEADER_TITLE_COLOR = "#ffffffff";
     private String HEADER_BG_COLOR = "#FF827717";
     private int CONTENT_PADDING_TOP = 12;
@@ -43,6 +47,7 @@ public class AccordionList extends ScrollView {
     private String TAG = getClass().getSimpleName();
     private ConstraintLayout root;
     private int CONTENT_MIN_HEIGHT = 500;
+    private String CONTENT_LAYOUT_NAME = "constraint_accordion_content";
 
     private void preConfig(){
         setFillViewport(true);
@@ -68,7 +73,6 @@ public class AccordionList extends ScrollView {
 
     public AccordionList push(ArrayList<AccordionItem> accordionItems){
         this.accordionItems.addAll(accordionItems);
-        Log.e(TAG,"*"+this.accordionItems.size());
         return this;
     }
 
@@ -94,9 +98,9 @@ public class AccordionList extends ScrollView {
         count = accordionItems.size();
         for (int i = 0; i < count; i++) {
 
-            LinearLayout titleView = getTitleView();
+            LinearLayout titleView = getTitleView(i);
             titleView.setId( i + 1);
-            Log.e(TAG,i + 1 + "=" + titleView.getId());
+
             TextView title = titleView.findViewById(TITLE_VIEW_ID);
             title.setText(accordionItems.get(i).getTitle());
 
@@ -119,7 +123,7 @@ public class AccordionList extends ScrollView {
                 }
             });
 
-            Log.e(TAG,view.getId()+":"+i);
+
             root.addView(view);
 
 
@@ -159,32 +163,57 @@ public class AccordionList extends ScrollView {
     }
 
     private LinearLayout getContentView() {
-        LinearLayout contentLayout = new LinearLayout(getContext()){
-            @Override
-            protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-                super.onLayout(changed, left, top, right, bottom);
-                if (changed)
+        LinearLayout contentLayout;
+        final TextView content;
+
+        int layoutId = getContext().getResources().getIdentifier(CONTENT_LAYOUT_NAME,"layout",getContext().getPackageName());
+        Log.e(TAG,layoutId + "");
+
+        if (layoutId > 0){
+            contentLayout = (LinearLayout) ((Activity) getContext()).getLayoutInflater().inflate(layoutId, null);
+            contentLayout.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
                     if (contentView.getHeight() < CONTENT_MIN_HEIGHT){
                         configParentsToHandleContentNewHeight();
                     }
+                }
+            });
+
+            content = contentLayout.findViewWithTag(CONTENT_LAYOUT_NAME);
+
+        }else {
+            contentLayout = new LinearLayout(getContext()) {
+                @Override
+                protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                    super.onLayout(changed, left, top, right, bottom);
+                    if (changed)
+                        if (contentView.getHeight() < CONTENT_MIN_HEIGHT) {
+                            configParentsToHandleContentNewHeight();
+                        }
+                }
+            };
+            contentLayout.setPadding(12, CONTENT_PADDING_TOP, 12, CONTENT_PADDING_BOTTOM);
+
+            content = new TextView(getContext());
+            content.setGravity(Gravity.END);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                content.setTextDirection(View.TEXT_DIRECTION_LOCALE);
+                content.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
             }
-        };
+
+            contentLayout.addView(content);
+        }
+
+        content.setId(CONTENT_VIEW_ID);
         contentLayout.setId(CONTENT_VIEW_ID - 1);
 
-        contentLayout.setPadding(12, CONTENT_PADDING_TOP, 12, CONTENT_PADDING_BOTTOM);
         LayoutParams layout_764 = new LayoutParams(0, 0);
         contentLayout.setLayoutParams(layout_764);
 
-
-        final TextView content = new TextView(getContext());
-        content.setId(CONTENT_VIEW_ID);
-        content.setGravity(Gravity.END);
         content.setLinksClickable(true);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            content.setTextDirection(View.TEXT_DIRECTION_LOCALE);
-            content.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-        }
+
 
         content.setVerticalScrollBarEnabled(true);
         content.setOverScrollMode(OVER_SCROLL_ALWAYS);
@@ -224,11 +253,8 @@ public class AccordionList extends ScrollView {
                     }
                 });
 
-        LayoutParams layout_36 = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layout_36 = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         content.setLayoutParams(layout_36);
-
-
-        contentLayout.addView(content);
 
         return contentLayout;
     }
@@ -292,12 +318,74 @@ public class AccordionList extends ScrollView {
         selected = index;
     }
 
-    private LinearLayout getTitleView(){
-        LinearLayout layout = new LinearLayout(getContext());
+    private LinearLayout getTitleView(int index){
+        LinearLayout layout;
+        TextView tv;
+        ImageView arrow;
+
+        int layoutId = getContext().getResources().getIdentifier(TITLE_LAYOUT_NAME,"layout",getContext().getPackageName());
+        Log.e(TAG,layoutId + "");
+
+        if (layoutId > 0){
+            layout = (LinearLayout) ((Activity) getContext()).getLayoutInflater().inflate(layoutId, null);
+
+            tv = layout.findViewWithTag(TITLE_LAYOUT_NAME);
+            arrow = layout.findViewWithTag(TITLE_LAYOUT_NAME+"_arrow");
+
+
+            Drawable background = layout.getBackground();
+            if (background instanceof ColorDrawable)
+                layout.setBackgroundColor(index%2>0 ? ((ColorDrawable) background).getColor() : ((ColorDrawable) background).getColor()+20);
+
+
+
+        }else {
+            layout = new LinearLayout(getContext());
+            layout.setOrientation(LinearLayout.HORIZONTAL);
+            tv = new TextView(getContext());
+            tv.setMaxLines(1);
+            //tv.setBackgroundResource(backgroundResource);
+            tv.setTextColor(Color.parseColor(HEADER_TITLE_COLOR));
+
+            tv.setPadding(density * 12
+                    ,density * 2
+                    ,density * 12
+                    ,density * 2);
+            tv.setTypeface(face);
+            tv.setGravity(Gravity.START);
+            LinearLayout.LayoutParams layout_765 = new LinearLayout.LayoutParams(0,LayoutParams.WRAP_CONTENT);
+            layout_765.weight = 0.9f;
+            layout_765.bottomMargin = (int) (density * 2);
+            layout_765.topMargin = (int) (density * 2);
+
+            layout_765.setMargins(density * 8 , 0 , density * 8 , 0);
+            tv.setLayoutParams(layout_765);
+            tv.setGravity(Gravity.CENTER_VERTICAL);
+
+            layout.addView(tv);
+
+            arrow = new ImageView(getContext());
+            LinearLayout.LayoutParams layout_766 = new LinearLayout.LayoutParams(0
+                    , LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            layout_766.weight = 0.1f;
+            layout_766.setMargins(density * 8 , 0 , density * 8 , 0);
+            arrow.setLayoutParams(layout_766);
+            arrow.setRotation(0);
+            arrow.setImageResource(ARROW_ICON);
+
+            layout.addView(arrow);
+
+            layout.setBackgroundColor(index%2>0 ? Color.parseColor(HEADER_BG_COLOR) : Color.parseColor(HEADER_BG_COLOR)+20);
+        }
+
         ConstraintLayout.LayoutParams layout_763 = new ConstraintLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(layout_763);
-        layout.setOrientation(LinearLayout.HORIZONTAL);
-        layout.setBackgroundColor(Color.parseColor(HEADER_BG_COLOR));
+
+        arrow.setId(CONTENT_ARROW_ID);
+        tv.setId(TITLE_VIEW_ID);
+
+
 /*
         int[] attrs = new int[]{R.attr.selectableItemBackground};
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs);
@@ -305,42 +393,7 @@ public class AccordionList extends ScrollView {
 
         typedArray.recycle();*/
 
-        TextView tv = new TextView(getContext());
-        tv.setMaxLines(1);
-        //tv.setBackgroundResource(backgroundResource);
-        tv.setTextColor(Color.parseColor(HEADER_TITLE_COLOR));
 
-        tv.setPadding(density * 12
-                ,density * 2
-                ,density * 12
-                ,density * 2);
-        tv.setTypeface(face);
-        tv.setGravity(Gravity.START);
-        LinearLayout.LayoutParams layout_765 = new LinearLayout.LayoutParams(0,LayoutParams.WRAP_CONTENT);
-        layout_765.weight = 0.9f;
-        layout_765.bottomMargin = (int) (density * 2);
-        layout_765.topMargin = (int) (density * 2);
-
-        layout_765.setMargins(density * 8 , 0 , density * 8 , 0);
-        tv.setLayoutParams(layout_765);
-        tv.setGravity(Gravity.CENTER_VERTICAL);
-
-
-        tv.setId(TITLE_VIEW_ID);
-        layout.addView(tv);
-
-        ImageView arrow = new ImageView(getContext());
-        LinearLayout.LayoutParams layout_766 = new LinearLayout.LayoutParams(0
-                , LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        layout_766.weight = 0.1f;
-        layout_766.setMargins(density * 8 , 0 , density * 8 , 0);
-        arrow.setLayoutParams(layout_766);
-        arrow.setId(CONTENT_ARROW_ID);
-        arrow.setRotation(0);
-        arrow.setImageResource(ARROW_ICON);
-
-        layout.addView(arrow);
 
         return layout;
     }

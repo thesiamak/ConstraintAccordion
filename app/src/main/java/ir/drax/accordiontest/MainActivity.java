@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import ir.drax.constraintaccordionlist.AccordionItem;
 import ir.drax.constraintaccordionlist.AccordionList;
 
-public class Main2Activity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.constraint_accordion_content);
+        setContentView(R.layout.activity_main);
 
         // step 1
         ArrayList<AccordionItem> accordionItems = new ArrayList<>();
@@ -51,6 +51,8 @@ public class Main2Activity extends AppCompatActivity {
         //setContentView(constraintLayout);
 
         //buildConstraintLayout();
+
+
     }
 
 
