@@ -91,7 +91,7 @@ _That's it!_
 * [x] Clear from Card-View
 * [x] Handle indefinite list items
 * [ ] Redesign UI
-* [ ] Make styles public
+* [x] Make styles public
 * [ ] Display multiple content types
 * [ ] Test on old sdk versions
 
