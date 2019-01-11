@@ -4,6 +4,8 @@ ConstraintAccordion is a [constraint-layout](https://developer.android.com/train
 
 ***
 
+<img src="" width="40" height="40" />
+GIF is loading ...
 
 
 ### Features:
@@ -77,7 +79,7 @@ AccordionList accordionList = findViewById(R.id.accordion);
 * You also can push list items asynchronously(one by one or bulk) .
 
 ```
-accordionList.push(accordionSingleItem);
+accordionList.push(new AccordionItem("Item title" , "Item text content ..."));
 ```
 
 _That's it!_
@@ -88,11 +90,11 @@ _That's it!_
 
 
 ### To-do:
-* [x] Clear from Card-View
+* [x] Remove Card-View
 * [x] Handle indefinite list items
 * [ ] Redesign UI
 * [x] Make styles public
-* [ ] Display multiple content types
+* [ ] Display markup
 * [ ] Test on old sdk versions
 
 
