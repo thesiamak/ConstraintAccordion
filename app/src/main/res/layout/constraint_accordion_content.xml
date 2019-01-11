@@ -5,17 +5,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity"
     android:background="@color/white"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:background="?attr/selectableItemBackground"
+    <ir.drax.constraintaccordionlist.JustifiedTextView
         android:padding="6dp"
         android:tag="constraint_accordion_content"
         android:textColor="@color/colorPrimaryDark"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textDirection="locale"
-        android:text="dasldnlskadalsndk ;l dlksa; dsdkld a;dl ;dasdndasd k k dsadjsakjsdljksnd lalsndllsadk s"
         />
+
 </LinearLayout>

@@ -3,6 +3,7 @@ package ir.drax.constraintaccordionlist;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,7 +11,6 @@ import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.text.method.ScrollingMovementMethod;
-import android.text.util.Linkify;
 import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -28,11 +28,12 @@ import java.util.ArrayList;
 
 public class AccordionList extends ScrollView {
 
+    private Paint.Align TEXT_ALIGNMENT = Paint.Align.LEFT;
     private String TITLE_LAYOUT_NAME = "constraint_accordion_title";
     private String HEADER_TITLE_COLOR = "#ffffffff";
     private String HEADER_BG_COLOR = "#FF827717";
     private int CONTENT_PADDING_TOP = 12;
-    private int CONTENT_PADDING_BOTTOM = 12;
+    private int CONTENT_PADDING_BOTTOM = 42;
 
     private int count,selected = 0;
 
@@ -96,6 +97,7 @@ public class AccordionList extends ScrollView {
             root.addView(contentView);
 
         count = accordionItems.size();
+
         for (int i = 0; i < count; i++) {
 
             LinearLayout titleView = getTitleView(i);
@@ -107,6 +109,7 @@ public class AccordionList extends ScrollView {
             accordionItems.set(i , new AccordionItem(
                     accordionItems.get(i).getTitle()
                     ,accordionItems.get(i).getText()
+                    ,accordionItems.get(i).getAlignment()
                     ,titleView));
 
         }
@@ -144,8 +147,6 @@ public class AccordionList extends ScrollView {
         set.applyTo(root);
 
         if (getChildCount()==0){
-            /*Toast.makeText(getContext(), "ok", Toast.LENGTH_SHORT).show();
-            Toast.makeText(getContext(), "lll", Toast.LENGTH_SHORT).show();*/
             addView(root);
         }
 
@@ -164,7 +165,7 @@ public class AccordionList extends ScrollView {
 
     private LinearLayout getContentView() {
         LinearLayout contentLayout;
-        final TextView content;
+        final JustifiedTextView content;
 
         int layoutId = getContext().getResources().getIdentifier(CONTENT_LAYOUT_NAME,"layout",getContext().getPackageName());
         Log.e(TAG,layoutId + "");
@@ -195,7 +196,7 @@ public class AccordionList extends ScrollView {
             };
             contentLayout.setPadding(12, CONTENT_PADDING_TOP, 12, CONTENT_PADDING_BOTTOM);
 
-            content = new TextView(getContext());
+            content = new JustifiedTextView(getContext());
             content.setGravity(Gravity.END);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 content.setTextDirection(View.TEXT_DIRECTION_LOCALE);
@@ -219,6 +220,7 @@ public class AccordionList extends ScrollView {
         content.setOverScrollMode(OVER_SCROLL_ALWAYS);
         content.setScrollBarStyle(SCROLLBARS_INSIDE_INSET);
         content.setMovementMethod(new ScrollingMovementMethod());
+
         content.setTypeface(face);
 
 
@@ -290,10 +292,14 @@ public class AccordionList extends ScrollView {
         set.connect(contentView.getId(), ConstraintSet.TOP, accordionItems.get(index).getView().getId(), ConstraintSet.BOTTOM);
         set.connect(contentView.getId(), ConstraintSet.BOTTOM, index ==  count-1 ? ConstraintSet.PARENT_ID : accordionItems.get(index + 1 ).getView().getId(), index ==  count-1 ? ConstraintSet.BOTTOM : ConstraintSet.TOP);
 
-        ((TextView)contentView.findViewById(CONTENT_VIEW_ID))
-                .setText(accordionItems.get(index).getText());
+        JustifiedTextView textView = contentView.findViewById(CONTENT_VIEW_ID);
+        textView.setText(accordionItems.get(index).getText(),true);
 
-        Linkify.addLinks((TextView)contentView.findViewById(CONTENT_VIEW_ID), Linkify.ALL);
+        if (accordionItems.get(index).getAlignment() != null)
+            JustifiedTextView._align = accordionItems.get(index).getAlignment();
+        else
+            JustifiedTextView._align = TEXT_ALIGNMENT;
+
         clickedView
                 .findViewById(CONTENT_ARROW_ID)
                 .animate()
@@ -458,6 +464,11 @@ public class AccordionList extends ScrollView {
             build();
             //itemClicked(accordionItems.get(selected).getView(),selected);//select first item as default
         }
+    }
+
+    public AccordionList setTextAlign(Paint.Align textAlign){
+        TEXT_ALIGNMENT=textAlign;
+        return this;
     }
 }
 
