@@ -1,4 +1,6 @@
 # ConstraintAccordion 
+[![](https://jitpack.io/v/draxdave/ConstraintAccordion.svg)](https://jitpack.io/#draxdave/ConstraintAccordion)
+
 
 ConstraintAccordion is a [constraint-layout](https://developer.android.com/training/constraint-layout/) based list in Android to display title-description list ex: FAQ , Privacy ,..  . Constraint layout mostly used to implement responsive mobile app layouts. It's also known as a light weight View-Group. 
 
@@ -42,7 +44,7 @@ allprojects {
 ```
 dependencies {
 
-	        implementation 'com.github.draxdave:ConstraintAccordion:1.0.2'
+	        implementation 'com.github.draxdave:ConstraintAccordion:1.0.7'
 
 	}
 ```
