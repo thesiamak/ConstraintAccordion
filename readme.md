@@ -4,7 +4,7 @@ ConstraintAccordion is a [constraint-layout](https://developer.android.com/train
 
 ***
 
-<img src="http://drax.ir/tmp/github/gif/github.com.draxdave.ConstraintAccordion.gif.1.gif" width="40" height="40" />
+<img src="http://drax.ir/tmp/github/gif/github.com.draxdave.ConstraintAccordion.gif.1.gif" width="250" height="400" />
 GIF is loading ...
 
 
